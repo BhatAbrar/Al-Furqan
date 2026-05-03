@@ -1,20 +1,45 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Al-Furqan
 
-# Run and deploy your AI Studio app
+Al-Furqan (The Criterion) is a sophisticated and serene Quran Explorer web application. It allows users to delve into the beauty of the Quranic verses with authentic Arabic text and English translations, accompanied by peaceful audio recitations.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/6ec68fd7-93dd-490c-8d4a-f0aa579b34c7
+- **Verse Discovery**: Navigate through all 114 chapters (Surahs) and their respective verses.
+- **Bi-lingual Interface**: View pristine Arabic text (Uthmani) alongside clear English translations.
+- **Audio Experience**: Listen to heart-soothing Arabic recitals and English translations for every verse.
+- **Responsive Design**: A sleek, dark-themed interface built for both desktop and mobile devices.
+- **Motion Animations**: Smooth transitions and meaningful interactions.
 
-## Run Locally
+## Technology Stack
 
-**Prerequisites:**  Node.js
+- **Frontend**: React 19, TypeScript
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion (via `motion/react`)
+- **Icons**: Lucide React
+- **API**: [Al Quran Cloud API](https://alquran.cloud/api)
 
+## Getting Started
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+To run this project locally:
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/BhatAbrar/Al-Furqan.git
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+## Author
+
+**Abrar Bashir**
+- [GitHub](https://github.com/BhatAbrar)
+
+## License
+
+This project is licensed under the Apache-2.0 License.

@@ -15,7 +15,7 @@ export default function App() {
   const [playing, setPlaying] = useState(false);
   const [activeAudio, setActiveAudio] = useState<'arabic' | 'english' | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<{ arabic: Ayah; english: Ayah; audioArabic: Ayah; audioEnglish: Ayah } | null>(null);
+  const [result, setResult] = useState<{ arabic: Ayah; english: Ayah; transliteration: Ayah; audioArabic: Ayah; audioEnglish: Ayah } | null>(null);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -108,11 +108,11 @@ export default function App() {
           <div className="w-6 h-6 border-2 border-brand-gold rotate-45 flex items-center justify-center">
             <div className="w-3 h-3 bg-brand-gold rotate-45"></div>
           </div>
-          <span className="text-xl tracking-[0.2em] font-light uppercase text-brand-gold hidden sm:block">AL-FURQAN BY ABRAR BASHIR</span>
+          <span className="text-base sm:text-xl tracking-[0.1em] sm:tracking-[0.2em] font-light uppercase text-brand-gold">AL-FURQAN BY ABRAR BASHIR</span>
         </div>
 
-        <form onSubmit={handleSearch} className="flex flex-wrap items-center justify-center gap-6 sm:gap-8">
-          <div className="flex flex-col">
+        <form onSubmit={handleSearch} className="flex items-center justify-center gap-4 sm:gap-8 w-full sm:w-auto">
+          <div className="flex flex-col items-center">
             <span className="text-[10px] uppercase tracking-widest text-brand-gold/60 mb-1">Surah</span>
             <input 
               type="number" 
@@ -120,23 +120,23 @@ export default function App() {
               max="114"
               value={surahNum}
               onChange={(e) => setSurahNum(e.target.value)}
-              className="bg-transparent border-b border-brand-gold/40 w-16 text-center focus:outline-none focus:border-brand-gold py-1 text-lg transition-colors"
+              className="bg-transparent border-b border-brand-gold/40 w-12 sm:w-16 text-center focus:outline-none focus:border-brand-gold py-1 text-base sm:text-lg transition-colors"
             />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col items-center">
             <span className="text-[10px] uppercase tracking-widest text-brand-gold/60 mb-1">Ayah</span>
             <input 
               type="number" 
               min="1"
               value={ayahNum}
               onChange={(e) => setAyahNum(e.target.value)}
-              className="bg-transparent border-b border-brand-gold/40 w-16 text-center focus:outline-none focus:border-brand-gold py-1 text-lg transition-colors"
+              className="bg-transparent border-b border-brand-gold/40 w-12 sm:w-16 text-center focus:outline-none focus:border-brand-gold py-1 text-base sm:text-lg transition-colors"
             />
           </div>
           <button 
             type="submit"
             disabled={loading}
-            className="px-6 py-2 bg-brand-gold text-brand-bg uppercase text-xs tracking-widest font-bold hover:bg-brand-gold/80 transition-all active:scale-95 disabled:opacity-50"
+            className="px-4 sm:px-6 py-2 bg-brand-gold text-brand-bg uppercase text-[10px] sm:text-xs tracking-widest font-bold hover:bg-brand-gold/80 transition-all active:scale-95 disabled:opacity-50"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Recite'}
           </button>
@@ -177,7 +177,7 @@ export default function App() {
               </div>
 
               {/* The Verse Card */}
-              <div className="w-full bg-brand-card border border-brand-gold/10 p-8 sm:p-16 shadow-2xl relative">
+              <div className="w-full bg-brand-card border border-brand-gold/10 p-6 sm:p-16 shadow-2xl relative">
                 {/* Decorative Icon on Top Edge */}
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-brand-bg px-4 text-brand-gold">
                   <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
@@ -195,6 +195,18 @@ export default function App() {
                       className="arabic-text text-4xl sm:text-5xl leading-[1.8] sm:leading-[2] text-brand-arabic"
                     >
                       {result.arabic.text}
+                    </motion.p>
+                  </div>
+
+                  {/* Transliteration */}
+                  <div className="text-center px-4">
+                    <motion.p 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.2 }}
+                      className="text-sm sm:text-base text-brand-gold/60 italic font-sans"
+                    >
+                      {result.transliteration.text}
                     </motion.p>
                   </div>
 
@@ -250,12 +262,13 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Navigation Controls (Simple next/prev info for now or just metadata) */}
-              <div className="mt-12 flex gap-8 sm:gap-12 items-center">
-                <div className="flex items-center gap-4 text-brand-gold/60 text-xs tracking-widest font-sans">
-                  <span className="h-px w-8 bg-brand-gold/20"></span>
-                  <span className="text-brand-gold">{result.arabic.surah.number} : {result.arabic.numberInSurah}</span>
-                  <span className="h-px w-8 bg-brand-gold/20"></span>
+              {/* Navigation Controls */}
+              <div className="w-full mt-8 flex flex-col sm:flex-row items-center justify-center gap-6">
+                {/* Ayah Reference info */}
+                <div className="flex items-center gap-4 text-brand-gold/60 text-[10px] tracking-widest font-sans uppercase">
+                  <span className="h-px w-6 sm:w-8 bg-brand-gold/20"></span>
+                  <span className="text-brand-gold whitespace-nowrap">Surah {result.arabic.surah.number} • Ayah {result.arabic.numberInSurah}</span>
+                  <span className="h-px w-6 sm:w-8 bg-brand-gold/20"></span>
                 </div>
               </div>
             </motion.div>
@@ -264,11 +277,8 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full h-16 border-t border-brand-gold/10 px-6 sm:px-12 flex flex-col sm:flex-row items-center justify-between text-[9px] uppercase tracking-[0.2em] text-brand-gold/40 mt-auto bg-brand-bg/50 backdrop-blur-sm">
-        <span>Sahih International Translation</span>
-        <div className="flex gap-6 mt-2 sm:mt-0">
-          <span>Nur Quran Explorer</span>
-        </div>
+      <footer className="w-full py-12 px-6 sm:px-12 flex items-center justify-center mt-auto">
+        <span className="text-[9px] uppercase tracking-[0.2em] text-brand-gold/20">Nur Quran Explorer • Developed by Abrar Bashir</span>
       </footer>
     </div>
   );

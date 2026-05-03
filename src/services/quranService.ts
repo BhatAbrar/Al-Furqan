@@ -31,8 +31,8 @@ export interface QuranResponse {
   data: Ayah[];
 }
 
-export async function fetchAyah(surah: number, ayah: number): Promise<{ arabic: Ayah; english: Ayah; audioArabic: Ayah; audioEnglish: Ayah }> {
-  const url = `https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/editions/quran-uthmani,en.sahih,ar.alafasy,en.walk`;
+export async function fetchAyah(surah: number, ayah: number): Promise<{ arabic: Ayah; english: Ayah; transliteration: Ayah; audioArabic: Ayah; audioEnglish: Ayah }> {
+  const url = `https://api.alquran.cloud/v1/ayah/${surah}:${ayah}/editions/quran-uthmani,en.itani,en.transliteration,ar.alafasy,en.walk`;
   
   const response = await fetch(url);
   if (!response.ok) {
@@ -42,15 +42,16 @@ export async function fetchAyah(surah: number, ayah: number): Promise<{ arabic: 
 
   const result: QuranResponse = await response.json();
   
-  if (result.code !== 200 || !result.data || result.data.length < 4) {
+  if (result.code !== 200 || !result.data || result.data.length < 5) {
     throw new Error('Unexpected API response format.');
   }
 
   return {
     arabic: result.data[0],
     english: result.data[1],
-    audioArabic: result.data[2],
-    audioEnglish: result.data[3],
+    transliteration: result.data[2],
+    audioArabic: result.data[3],
+    audioEnglish: result.data[4],
   };
 }
 
