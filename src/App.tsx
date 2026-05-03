@@ -5,8 +5,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, Book, MapPin, Info, ChevronRight, AlertCircle, Loader2, Play, Pause, Volume2 } from 'lucide-react';
+import { Search, Book, MapPin, Info, ChevronRight, ChevronLeft, AlertCircle, Loader2, Play, Pause, Volume2 } from 'lucide-react';
 import { fetchAyah, Ayah } from './services/quranService.ts';
+
+const SURAH_LENGTHS = [7, 286, 200, 176, 120, 165, 206, 75, 129, 109, 123, 111, 43, 52, 99, 128, 111, 110, 98, 135, 112, 78, 118, 64, 77, 227, 93, 88, 69, 60, 34, 30, 73, 54, 45, 83, 182, 88, 75, 85, 54, 53, 89, 59, 37, 35, 38, 29, 18, 45, 60, 49, 62, 55, 78, 96, 29, 22, 24, 13, 14, 11, 11, 18, 12, 12, 30, 52, 52, 44, 28, 28, 20, 56, 40, 31, 50, 40, 46, 42, 29, 19, 36, 25, 22, 17, 19, 26, 30, 20, 15, 21, 11, 8, 8, 19, 5, 8, 8, 11, 11, 8, 3, 9, 5, 4, 7, 3, 6, 3, 5, 4, 5, 6];
 
 export default function App() {
   const [surahNum, setSurahNum] = useState<string>('1');
@@ -19,19 +21,19 @@ export default function App() {
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const handleSearch = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!surahNum || !ayahNum) return;
+  const performSearch = async (s: string, a: string) => {
+    if (!s || !a) return;
 
     if (audioRef.current) {
       audioRef.current.pause();
       setPlaying(false);
+      setActiveAudio(null);
     }
 
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchAyah(parseInt(surahNum), parseInt(ayahNum));
+      const data = await fetchAyah(parseInt(s), parseInt(a));
       setResult(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -39,6 +41,47 @@ export default function App() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearch = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    performSearch(surahNum, ayahNum);
+  };
+
+  const handlePrev = () => {
+    let s = parseInt(surahNum);
+    let a = parseInt(ayahNum);
+
+    if (a > 1) {
+      a--;
+    } else if (s > 1) {
+      s--;
+      a = SURAH_LENGTHS[s - 1];
+    } else {
+      return; // At the start
+    }
+
+    setSurahNum(s.toString());
+    setAyahNum(a.toString());
+    performSearch(s.toString(), a.toString());
+  };
+
+  const handleNext = () => {
+    let s = parseInt(surahNum);
+    let a = parseInt(ayahNum);
+
+    if (a < SURAH_LENGTHS[s - 1]) {
+      a++;
+    } else if (s < 114) {
+      s++;
+      a = 1;
+    } else {
+      return; // At the end
+    }
+
+    setSurahNum(s.toString());
+    setAyahNum(a.toString());
+    performSearch(s.toString(), a.toString());
   };
 
   const toggleAudio = (type: 'arabic' | 'english') => {
@@ -264,11 +307,31 @@ export default function App() {
 
               {/* Navigation Controls */}
               <div className="w-full mt-8 flex flex-col sm:flex-row items-center justify-center gap-6">
-                {/* Ayah Reference info */}
-                <div className="flex items-center gap-4 text-brand-gold/60 text-[10px] tracking-widest font-sans uppercase">
-                  <span className="h-px w-6 sm:w-8 bg-brand-gold/20"></span>
-                  <span className="text-brand-gold whitespace-nowrap">Surah {result.arabic.surah.number} • Ayah {result.arabic.numberInSurah}</span>
-                  <span className="h-px w-6 sm:w-8 bg-brand-gold/20"></span>
+                {/* Ayah Reference info with arrows */}
+                <div className="flex items-center gap-4 sm:gap-8 text-brand-gold/60 text-[10px] tracking-widest font-sans uppercase">
+                  <motion.button
+                    whileHover={{ scale: 1.2 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={handlePrev}
+                    className="p-2 text-brand-gold hover:text-brand-gold/100 transition-colors"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </motion.button>
+                  
+                  <div className="flex items-center gap-4">
+                    <span className="h-px w-6 sm:w-8 bg-brand-gold/20"></span>
+                    <span className="text-brand-gold whitespace-nowrap">Surah {result.arabic.surah.number} • Ayah {result.arabic.numberInSurah}</span>
+                    <span className="h-px w-6 sm:w-8 bg-brand-gold/20"></span>
+                  </div>
+
+                  <motion.button
+                    whileHover={{ scale: 1.2 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={handleNext}
+                    className="p-2 text-brand-gold hover:text-brand-gold/100 transition-colors"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </motion.button>
                 </div>
               </div>
             </motion.div>
